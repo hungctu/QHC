@@ -130,5 +130,20 @@ def updateCodeUsedOnWP():
 def hello():
     return "hello"
 
+# @app.route('/test',methods=['POST'])
+# def test():
+#     try:
+#         data = request.json
+#         amount = float(data.get('amount', 0.1))
+#         cm = codeManager()
+#         result = cm.getQHCPerVNDPrice(amount)
+#         return jsonify(result), 200
+#     except Exception as e:
+#         print(e)
+#         return jsonify({
+#             "status": False,
+#             "error": str(e)
+#         }), 500
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

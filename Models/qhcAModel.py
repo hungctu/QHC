@@ -369,12 +369,13 @@ class qhcAModel:
 
             info = self.getCodeInfo(code)
             id = info['id']
-            unit = info['unit']*1000
+            unit = info['unit']
+            amount = self.pol.get_qhc_vnd_price(unit)
             return {
                 'status': True,
                 'id': id,
                 'code': code,
-                'unit': unit
+                'amount': amount
             }
 
         except Exception as e:

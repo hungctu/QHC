@@ -1,3 +1,4 @@
+import requests
 from dotenv import load_dotenv
 from web3 import Web3
 import os
@@ -25,6 +26,7 @@ class polygonClient:
 
     def checksum(self,address):
         return self.w3.to_checksum_address(address)
+
     # def send_transaction(self, receiver_address, amount):
     #     try:
     #         gas_price = self.w3.eth.gas_price
@@ -115,3 +117,72 @@ class polygonClient:
         except Exception as e:
             print(f"Error waiting for transaction {tx_hash}: {str(e)}")
             return None
+
+    def get_v3_price(self,token_in, token_out, amount_in, fee=100, sqrt_price_limit_x96=0):
+        # Khởi tạo contract Quoter
+        quoter_address = self.w3.to_checksum_address(os.getenv('QUOTER_ADDRESS'))
+        quoter_abi = os.getenv('QUOTER_ABI')
+        quoter = self.w3.eth.contract(address=quoter_address, abi=quoter_abi)
+
+        # Truy vấn tỷ giá
+        amount_out = quoter.functions.quoteExactInputSingle(token_in, token_out, fee, amount_in,
+                                                            sqrt_price_limit_x96).call()
+        return amount_out
+
+    def get_pol_usd_price(self):
+        url = os.getenv("POL_per_USD_API_URL")
+        try:
+            response = requests.get(url).json()
+            # Kiểm tra nếu phản hồi có dữ liệu
+            if "matic-network" in response:
+                return response["matic-network"]["usd"]
+            else:
+                print("Không có dữ liệu cho MATIC.")
+                return None
+        except Exception as e:
+            print(f"Đã xảy ra lỗi khi lấy dữ liệu: {e}")
+            return None
+
+    def get_usd_to_vnd_rate(self):
+        url = os.getenv("VND_per_USD_API_URL")  # Hoặc một API khác bạn chọn
+        response = requests.get(url).json()
+        return response["rates"]["VND"]
+
+    def get_qhc_vnd_price(self,amount):
+        try:
+            # Lấy giá WPOL/USD
+            wpol_usd_price = self.get_pol_usd_price()
+            print(f"Giá WPOL/USD: {wpol_usd_price}")
+
+            # Giả sử 1 QHC là input
+            qhc_decimals = 3  # Số decimals của token QHC
+            amount_in = self.to_wei_c(1,3)  # Lấy 1 token QHC
+
+            # Lấy giá QHC/WPOL từ Uniswap V3 (giả sử sử dụng pool 0.3% phí)
+            qhc_wpol_price_v3 = self.get_v3_price(self.token, os.getenv("WETH_ADDRESS"), amount_in)
+
+            qhc_wpol_price_v3 = self.from_wei_c(qhc_wpol_price_v3,18)  # Vì WPOL có 18 decimals
+
+            print(f"Giá QHC/WPOL từ Uniswap V3: {qhc_wpol_price_v3}")
+
+            # Quy đổi giá QHC/USD
+            qhc_usd_price = qhc_wpol_price_v3 * wpol_usd_price
+            print(f"Giá QHC/USD: {qhc_usd_price}")
+
+            # Lấy tỷ giá USD/VND từ API
+            usd_to_vnd = self.get_usd_to_vnd_rate()
+            print(f"Tỷ giá USD/VND: {usd_to_vnd}")
+
+            # Quy đổi sang VND
+            qhc_vnd_price = amount*(qhc_usd_price * usd_to_vnd)
+            print(f"Giá QHC/VND: {qhc_vnd_price}")
+            return{
+                    'status': True,
+                    'amount': qhc_vnd_price
+                }
+        except Exception as e:
+            print(f"Đã xảy ra lỗi: {e}")
+            return {
+                'status': False,
+                'error': str(e)
+            }

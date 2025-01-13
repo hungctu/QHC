@@ -5,6 +5,7 @@ from Models.qhcCModel import qhcCModel
 from Models.qhcDModel import qhcDModel
 from Models.tranfersModel import transferModel
 from Models.userIpModel import userIpModel
+from polygonClient import polygonClient
 
 
 class codeManager:
@@ -189,3 +190,15 @@ class codeManager:
                 'status': False,
                 'error': str(e)
             }
+
+    # def getQHCPerVNDPrice(self,amount):
+    #     try:
+    #         pol = polygonClient()
+    #         qhc_per_vnd = pol.get_qhc_vnd_price(amount)
+    #         return qhc_per_vnd
+    #     except Exception as e:
+    #         print(f"Error while finding code: {e}")
+    #         return {
+    #             'status': False,
+    #             'error': str(e)
+    #         }
