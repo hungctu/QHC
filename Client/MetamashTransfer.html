@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QHC Payment</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>QHC Payment</h1>
+        <form id="paymentForm">
+            <label for="walletAddress">Wallet Address:</label>
+            <input type="text" id="walletAddress" placeholder="Enter your wallet address" required>
+
+            <label for="amount">Amount (QHC):</label>
+            <select id="amount" required>
+                <option value="0.001">0.001 QHC</option>
+                <option value="0.01">0.01 QHC</option>
+                <option value="0.1">0.1 QHC</option>
+                <option value="1">1 QHC</option>
+            </select>
+
+            <button type="button" id="submitPayment">Pay Now</button>
+        </form>
+        <div class="message" id="message"></div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.7.5/dist/web3.min.js"></script>
+
+    <script src="javascript/payment.js"></script>
+</body>
+</html>
