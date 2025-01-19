@@ -150,6 +150,7 @@ class codeManager:
             updateCodeIsUsed = handler.updateCodeIsUsed(code,1)
             if updateCodeIsUsed['status']==False:
                 return updateCodeIsUsed
+            print("B1")
 
             tm = transferModel()
             addWP = tm.addWP(code,user_agent,order_id)
@@ -166,6 +167,43 @@ class codeManager:
                     'status': False,
                     'error': str(e)
                 }
+
+    def getWPCoupon(self, code):
+        try:
+            if code == "all":
+                handlers = [qhcAModel(), qhcBModel(), qhcCModel(), qhcDModel()]
+                all_results = []
+
+                for handler in handlers:
+                    result = handler.getWPCoupon()
+                    if result['status']:  # Chỉ thêm nếu lấy được dữ liệu thành công
+                        all_results.extend(result['result'])
+
+                return {
+                    'status': True,
+                    'result': all_results
+                }
+
+            match code:
+                case 'QHC_A':
+                    handler = qhcAModel()
+                case 'QHC_B':
+                    handler = qhcBModel()
+                case 'QHC_C':
+                    handler = qhcCModel()
+                case 'QHC_D':
+                    handler = qhcDModel()
+                case _:
+                    raise ValueError("Invalid code: Does not start with a valid character")
+
+            return handler.getWPCoupon()
+
+        except Exception as e:
+            print(f"Error while finding code: {e}")
+            return {
+                'status': False,
+                'error': str(e)
+            }
 
     def getUnit(self,code):
         try:

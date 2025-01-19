@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th12 22, 2024 lúc 03:32 PM
+-- Thời gian đã tạo: Th1 19, 2025 lúc 07:06 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.1.25
 
@@ -20,6 +20,32 @@ SET time_zone = "+00:00";
 --
 -- Cơ sở dữ liệu: `qhc`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `device`
+--
+
+CREATE TABLE `device` (
+  `id` int(11) NOT NULL,
+  `device_name` varchar(255) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `device_code`
+--
+
+CREATE TABLE `device_code` (
+  `id` int(11) NOT NULL,
+  `code_id` int(11) NOT NULL,
+  `code_type` varchar(10) NOT NULL,
+  `device_id` int(11) NOT NULL,
+  `get_code_at` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
 
@@ -166,8 +192,8 @@ CREATE TABLE `transfers` (
   `main_wallet_address` varchar(50) NOT NULL,
   `wallet_id` double NOT NULL,
   `code` varchar(15) NOT NULL,
-  `POL` varchar(50) NOT NULL,
-  `Tx_hash` datetime NOT NULL DEFAULT current_timestamp(),
+  `QHC` double NOT NULL,
+  `Tx_hash` varchar(50) NOT NULL,
   `created_at` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
@@ -198,9 +224,35 @@ CREATE TABLE `wallets` (
   `last_updated` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `wordpress`
+--
+
+CREATE TABLE `wordpress` (
+  `id` int(11) NOT NULL,
+  `code` varchar(10) NOT NULL,
+  `user_agent` varchar(25) NOT NULL,
+  `order_id` int(11) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
 --
 -- Chỉ mục cho các bảng đã đổ
 --
+
+--
+-- Chỉ mục cho bảng `device`
+--
+ALTER TABLE `device`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `device_code`
+--
+ALTER TABLE `device_code`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Chỉ mục cho bảng `get_qhca`
@@ -277,8 +329,26 @@ ALTER TABLE `wallets`
   ADD UNIQUE KEY `wallet_address` (`wallet_address`);
 
 --
+-- Chỉ mục cho bảng `wordpress`
+--
+ALTER TABLE `wordpress`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- AUTO_INCREMENT cho các bảng đã đổ
 --
+
+--
+-- AUTO_INCREMENT cho bảng `device`
+--
+ALTER TABLE `device`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `device_code`
+--
+ALTER TABLE `device_code`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT cho bảng `get_qhca`
@@ -350,6 +420,12 @@ ALTER TABLE `userip`
 -- AUTO_INCREMENT cho bảng `wallets`
 --
 ALTER TABLE `wallets`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `wordpress`
+--
+ALTER TABLE `wordpress`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
 

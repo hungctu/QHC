@@ -118,6 +118,22 @@ def updateCodeUsedOnWP():
         user_agent = request.headers.get('User-Agent')
         cm = codeManager()
         result = cm.updateCodeUsedOnWP(code,user_agent, order_id)
+        print(f"updateCodeUsedOnWP:{result}")
+        return jsonify(result), 200
+    except Exception as e:
+        print(e)
+        return jsonify({
+            "status": False,
+            "error": str(e)
+        }), 500
+
+@app.route('/code/getWPCoupon', methods=['POST'])
+def getWPCoupon():
+    try:
+        data = request.json
+        code = str(data.get('code', 'all'))
+        cm = codeManager()
+        result = cm.getWPCoupon(code)
         return jsonify(result), 200
     except Exception as e:
         print(e)

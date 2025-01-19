@@ -21,7 +21,13 @@ class transferModel:
         try:
             query = 'INSERT INTO wordpress(`code`, `user_agent`, `order_id`) VALUES (%s,%s,%s)'
             self.db.execute(query,(code,user_agent,order_id,))
-            return True
+            return {
+                    'status': True,
+                    'message': f'Updated {code} used successfully'
+                }
         except Exception as e:
             print(f"Error when add WP data to DB: {e}")
-            return False
+            return {
+                    'status': False,
+                    'message': 'Updated code used successfully'
+                }

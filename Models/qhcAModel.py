@@ -65,7 +65,7 @@ class qhcAModel:
 
     def checkCountCode(self):
         try:
-            query = """select count(id) as nums from qhc_a where status=1 LIMIT 1"""
+            query = """select count(id) as nums from qhc_a where status=1 and is_used=0 LIMIT 1"""
             result = self.db.fetch_one(query, ())
             if result['nums'] == 0:
                 return False
@@ -375,7 +375,7 @@ class qhcAModel:
                 'status': True,
                 'id': id,
                 'code': code,
-                'amount': amount
+                'amount': amount['amount']
             }
 
         except Exception as e:
@@ -385,6 +385,50 @@ class qhcAModel:
                 'error': str(e)
             }
 
+    def getAllCodeCanUse(self):
+        try:
+            query = """select id,code,unit from qhc_a where status=1 and is_used=0"""
+            result = self.db.fetch_all(query, ())
+            amount = self.pol.get_qhc_vnd_price(result[0]['unit'])['amount']
+            formatted_result = [
+                {
+                    'code': row['code'],
+                    'amount': amount
+                }
+                for row in result
+            ]
+
+            return {
+                'status': True,
+                'result': formatted_result
+            }
+        except Exception as e:
+            print(f"Error when get code: {e}")
+            return {
+                'status': False,
+                'error': str(e)
+            }
+
+    def getWPCoupon(self):
+        try:
+            if self.checkCountCode() == False:
+                self.addCodes(10)
+
+            results = self.getAllCodeCanUse()
+            if results['status']==False:
+                return {
+                    'status': False,
+                    'error': 'Cant get code'
+                }
+
+            return results
+
+        except Exception as e:
+            print(f"ERROR: {e}")
+            return {
+                'status': False,
+                'error': str(e)
+            }
 
     def getCodeUnit(self, code):
         try:
