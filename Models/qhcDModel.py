@@ -390,7 +390,7 @@ class qhcDModel:
 
     def getAllCodeCanUse(self):
         try:
-            query = """select id,code,unit from qhc_d where status=1 and is_used=0"""
+            query = """select id,code,unit from qhc_d where is_used=0"""
             result = self.db.fetch_all(query, ())
             amount = self.pol.get_qhc_vnd_price(result[0]['unit'])['amount']
             formatted_result = [
